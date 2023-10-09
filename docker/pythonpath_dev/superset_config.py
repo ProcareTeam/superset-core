@@ -25,7 +25,7 @@ import os
 
 from celery.schedules import crontab
 from flask_caching.backends.filesystemcache import FileSystemCache
-
+from superset.tasks.types import ExecutorType
 logger = logging.getLogger()
 
 DATABASE_DIALECT = os.getenv("DATABASE_DIALECT")
@@ -100,6 +100,37 @@ WEBDRIVER_BASEURL_USER_FRIENDLY = WEBDRIVER_BASEURL
 
 SQLLAB_CTAS_NO_LIMIT = True
 
+
+
+PUBLIC_ROLE_LIKE="Gamma"
+TALISMAN_ENABLED =False
+
+WEBDRIVER_TYPE = "chrome"
+WEBDRIVER_OPTION_ARGS = [
+    "--force-device-scale-factor=2.0",
+    "--high-dpi-support=2.0",
+    "--headless",
+    "--disable-gpu",
+    "--disable-dev-shm-usage",
+    "--no-sandbox",
+    "--disable-setuid-sandbox",
+    "--disable-extensions",
+    "--marionette"
+]
+THUMBNAIL_SELENIUM_USER="admin"
+ALERT_REPORTS_EXECUTE_AS = [ExecutorType.SELENIUM]
+
+EMAIL_NOTIFICATIONS = True  # all the emails are sent using dryrun
+SMTP_HOST = ""
+SMTP_STARTTLS = True
+SMTP_SSL = False
+SMTP_USER = "superset@mail.com"
+SMTP_PORT = 587
+SMTP_PASSWORD = "Abc123"
+SMTP_MAIL_FROM = "superset@mail.com"
+
+SCREENSHOT_LOCATE_WAIT = 10000
+SCREENSHOT_LOAD_WAIT = 6000
 #
 # Optionally import superset_config_docker.py (which will have been included on
 # the PYTHONPATH) in order to allow for local settings to be overridden
