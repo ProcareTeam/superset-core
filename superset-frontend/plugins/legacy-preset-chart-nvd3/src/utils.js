@@ -75,25 +75,22 @@ export function drawBarValues(svg, data, stacked, axisFormat) {
         const rectObj = d3.select(this);
         const transformAttr = rectObj.attr('transform');
         const xPos = parseFloat(rectObj.attr('x'));
-        const yPos = parseFloat(rectObj.attr('y'));
+        // const yPos = parseFloat(rectObj.attr('y'));
         const rectWidth = parseFloat(rectObj.attr('width'));
         const rectHeight = parseFloat(rectObj.attr('height'));
         const textEls = groupLabels
           .append('text')
           .text(format(stacked ? totalStackedValues[index] : d.y))
-          .attr('transform', transformAttr)
           .attr('class', 'bar-chart-label');
-
+        const bardiv = svg.select('g.nv-y.nv-axis');
+        const barheight = bardiv.node().getBBox();
         // fine tune text position
         const bbox = textEls.node().getBBox();
-        const labelWidth = bbox.width;
+        // const labelWidth = bbox.width;
         const labelHeight = bbox.height;
-        textEls.attr('x', xPos + rectWidth / 2 - labelWidth / 2);
-        if (rectObj.attr('class').includes('positive')) {
-          textEls.attr('y', yPos - 5);
-        } else {
-          textEls.attr('y', yPos + rectHeight + labelHeight);
-        }
+        textEls.attr('transform', `${transformAttr} rotate(270)`);
+        textEls.attr('x', rectHeight - barheight.height + 10);
+        textEls.attr('y', xPos + rectWidth / 2 + labelHeight / 2 - 4);
       });
   }, ANIMATION_TIME);
 }
