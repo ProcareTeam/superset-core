@@ -78,7 +78,25 @@ export default function buildQuery(formData: QueryFormData) {
       ...ensureIsArray(groupby),
     ];
 
-    return [
+    const sortColumn: any = formData?.groupedbar;
+    const SortData = {
+      ...sortColumn, // Copy the original properties
+      label: `${formData.groupedbar ? formData.groupedbar.label : ''}Sort`, // Update label if needed
+    };
+    let customSorting = {};
+    if (sortColumn) {
+      customSorting = {
+        columns: [...ensureIsArray(groupby)],
+        metrics: [formData.groupedbar ? SortData : []],
+      };
+    } else {
+      customSorting = {
+        columns,
+        metrics: [],
+      };
+    }
+
+    const buildQuery = [
       {
         ...baseQueryObject,
         metrics: [...(baseQueryObject.metrics || []), ...extra_metrics],
@@ -107,6 +125,9 @@ export default function buildQuery(formData: QueryFormData) {
           prophetOperator(formData, baseQueryObject),
         ],
       },
+      customSorting,
     ];
+
+    return buildQuery;
   });
 }

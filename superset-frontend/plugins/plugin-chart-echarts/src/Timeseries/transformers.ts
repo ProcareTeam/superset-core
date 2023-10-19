@@ -308,6 +308,9 @@ export function transformSeries(
     label: {
       show: !!showValue,
       position: isHorizontal ? 'right' : 'top',
+      rotate: 90,
+      align: 'left',
+      verticalAlign: 'middle',
       formatter: (params: any) => {
         const { value, dataIndex, seriesIndex, seriesName } = params;
         const numericValue = isHorizontal ? value[0] : value[1];

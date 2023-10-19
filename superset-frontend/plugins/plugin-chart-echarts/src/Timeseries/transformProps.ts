@@ -96,6 +96,11 @@ import {
 import { getDefaultTooltip } from '../utils/tooltip';
 import { getYAxisFormatter } from '../utils/getYAxisFormatter';
 
+// interface EchartsTimeseriesChartPropsUpdated
+//   extends EchartsTimeseriesChartProps {
+//   groupedbar: any;
+// }
+
 export default function transformProps(
   chartProps: EchartsTimeseriesChartProps,
 ): TimeseriesChartTransformedProps {
@@ -475,6 +480,27 @@ export default function transformProps(
     [xAxis, yAxis] = [yAxis, xAxis];
     [padding.bottom, padding.left] = [padding.left, padding.bottom];
     yAxis.inverse = true;
+  }
+
+  if (chartProps.formData.groupedbar) {
+    const sortData: any = chartProps.queriesData[1]
+      ? chartProps.queriesData[1]
+      : [];
+    const keyValuesObject = {};
+    sortData.data.forEach((item: { [x: string]: any }) => {
+      keyValuesObject[String(item[sortData.colnames[0]])] =
+        item[sortData.colnames[1]];
+    });
+    series.sort((a: any, b: any) => {
+      // Convert "id" values to numbers and compare them
+      const idA = parseInt(keyValuesObject[a.id], 10);
+      const idB = parseInt(keyValuesObject[b.id], 10);
+      if (idA && idB) {
+        return idA - idB;
+      }
+      return 0;
+    });
+    legendData.sort((a, b) => keyValuesObject[a] - keyValuesObject[b]);
   }
 
   const echartOptions: EChartsCoreOption = {

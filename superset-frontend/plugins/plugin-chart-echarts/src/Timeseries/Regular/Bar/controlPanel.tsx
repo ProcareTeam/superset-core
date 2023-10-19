@@ -22,6 +22,7 @@ import {
   ControlPanelConfig,
   ControlPanelsContainerProps,
   ControlSetRow,
+  ControlPanelSectionConfig,
   ControlStateMapping,
   ControlSubSectionHeader,
   D3_TIME_FORMAT_DOCS,
@@ -42,6 +43,12 @@ import {
   DEFAULT_FORM_DATA,
   TIME_SERIES_DESCRIPTION_TEXT,
 } from '../../constants';
+
+const optionalEntity = {
+  ...sharedControls.metric,
+  clearable: true,
+  validators: [],
+};
 
 const {
   logAxis,
@@ -260,10 +267,28 @@ function createAxisControl(axis: 'x' | 'y'): ControlSetRow[] {
   ];
 }
 
+export const groupedbarsorting: ControlPanelSectionConfig = {
+  label: t('Grouped Bar Sorting'),
+  expanded: true,
+  controlSetRows: [
+    [
+      {
+        name: 'groupedbar',
+        config: {
+          ...optionalEntity,
+          label: t('sort by'),
+          description: t('Column to sort by'),
+        },
+      },
+    ],
+  ],
+};
+
 const config: ControlPanelConfig = {
   controlPanelSections: [
     sections.genericTime,
     sections.echartsTimeSeriesQueryWithXAxisSort,
+    groupedbarsorting,
     sections.advancedAnalyticsControls,
     sections.annotationsAndLayersControls,
     sections.forecastIntervalControls,
