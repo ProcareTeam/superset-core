@@ -17,11 +17,11 @@
  * under the License.
  */
 import cx from 'classnames';
-import React from 'react';
-import PropTypes from 'prop-types';
-import { styled, t, logging } from '@superset-ui/core';
 import { debounce, isEqual } from 'lodash';
+import PropTypes from 'prop-types';
+import React from 'react';
 import { withRouter } from 'react-router-dom';
+import { styled, t, logging } from '@superset-ui/core';
 
 import { exportChart, mountExploreUrl } from 'src/explore/exploreUtils';
 import ChartContainer from 'src/components/Chart/ChartContainer';
@@ -35,11 +35,10 @@ import {
 import { areObjectsEqual } from 'src/reduxUtils';
 import { postFormData } from 'src/explore/exploreUtils/formData';
 import { URL_PARAMS } from 'src/constants';
-
+import { getUrlParam } from 'src/utils/urlUtils';
 import SliceHeader from '../SliceHeader';
 import MissingChart from '../MissingChart';
 import { slicePropShape, chartPropShape } from '../../util/propShapes';
-
 import { isFilterBox } from '../../util/activeDashboardFilters';
 import getFilterValuesByFilterId from '../../util/getFilterValuesByFilterId';
 
@@ -210,6 +209,16 @@ class Chart extends React.Component {
       return true;
     }
 
+    if (nextProps.isComponentVisible && getUrlParam(URL_PARAMS.force)) {
+      setTimeout(() => {
+        const nodes = document.getElementsByClassName('chart-slice');
+
+        for (const node of nodes) {
+          this.setCustomStyle(node);
+        }
+      }, 1000);
+    }
+
     // `cacheBusterProp` is jected by react-hot-loader
     return this.props.cacheBusterProp !== nextProps.cacheBusterProp;
   }
@@ -371,6 +380,25 @@ class Chart extends React.Component {
       this.props.dashboardId,
     );
   }
+
+  setCustomStyle = node => {
+    if (typeof node.className === 'string') {
+      if (node.className === 'mapboxgl-control-container') return;
+      if (node.className.includes('ant-dropdown')) return;
+      if (node.className.includes('header-controls')) return;
+    }
+
+    if (node && node.style && node.className !== 'header-controls') {
+      const editedNode = node;
+      editedNode.style.height = 'auto';
+    }
+
+    if (node.children.length > 0) {
+      for (const comp of node.children) {
+        this.setCustomStyle(comp);
+      }
+    }
+  };
 
   render() {
     const {

@@ -16,9 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { SyntheticEvent } from 'react';
 import domToImage from 'dom-to-image-more';
 import kebabCase from 'lodash/kebabCase';
+import { SyntheticEvent } from 'react';
 import { t, supersetTheme } from '@superset-ui/core';
 import { addWarningToast } from 'src/components/MessageToasts/actions';
 
@@ -58,23 +58,37 @@ export default function downloadAsImage(
 
     // Mapbox controls are loaded from different origin, causing CORS error
     // See https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/toDataURL#exceptions
-    const filter = (node: Element) => {
+    const filter = (node: HTMLElement) => {
       if (typeof node.className === 'string') {
         return (
           node.className !== 'mapboxgl-control-container' &&
-          !node.className.includes('ant-dropdown')
+          !node.className.includes('ant-dropdown') &&
+          !node.className.includes('header-controls')
         );
       }
+
+      if (node?.style !== undefined && node?.className !== 'header-controls') {
+        const editedNode: HTMLElement = node;
+        editedNode.style.height = 'auto';
+      }
+
       return true;
     };
 
+    const pCloned = elementToPrint.cloneNode(true);
+    const newNode = document.createElement('div');
+    newNode.setAttribute('id', 'clone');
+    document.getElementById('app')?.appendChild(newNode);
+    newNode?.replaceChildren(pCloned);
+
     return domToImage
-      .toJpeg(elementToPrint, {
+      .toJpeg(pCloned, {
         quality: 0.95,
         bgcolor: supersetTheme.colors.grayscale.light4,
         filter,
       })
       .then(dataUrl => {
+        newNode.remove();
         const link = document.createElement('a');
         link.download = `${generateFileStem(description)}.jpg`;
         link.href = dataUrl;

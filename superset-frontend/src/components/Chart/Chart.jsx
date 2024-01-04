@@ -117,6 +117,7 @@ const Styles = styled.div`
     justify-content: center;
 
     height: ${p => p.height}px;
+    height: auto;
 
     .pivot_table tbody tr {
       font-feature-settings: 'tnum' 1;

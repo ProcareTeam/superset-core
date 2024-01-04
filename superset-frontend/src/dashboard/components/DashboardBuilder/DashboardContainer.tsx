@@ -18,6 +18,8 @@
  */
 // ParentSize uses resize observer so the dashboard will update size
 // when its container size changes, due to e.g., builder side panel opening
+import jsonStringify from 'json-stringify-pretty-compact';
+import pick from 'lodash/pick';
 import React, { FC, useCallback, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -30,7 +32,6 @@ import {
   useComponentDidUpdate,
 } from '@superset-ui/core';
 import { ParentSize } from '@visx/responsive';
-import pick from 'lodash/pick';
 import Tabs from 'src/components/Tabs';
 import DashboardGrid from 'src/dashboard/containers/DashboardGrid';
 import {
@@ -48,7 +49,8 @@ import findTabIndexByComponentId from 'src/dashboard/util/findTabIndexByComponen
 import { setInScopeStatusOfFilters } from 'src/dashboard/actions/nativeFilters';
 import { dashboardInfoChanged } from 'src/dashboard/actions/dashboardInfo';
 import { setColorScheme } from 'src/dashboard/actions/dashboardState';
-import jsonStringify from 'json-stringify-pretty-compact';
+import { URL_PARAMS } from 'src/constants';
+import { getUrlParam } from 'src/utils/urlUtils';
 import { NATIVE_FILTER_DIVIDER_PREFIX } from '../nativeFilters/FiltersConfigModal/utils';
 import { findTabsWithChartsInScope } from '../nativeFilters/utils';
 import { getRootLevelTabIndex, getRootLevelTabsComponent } from './utils';
@@ -236,13 +238,25 @@ const DashboardContainer: FC<DashboardContainerProps> = ({ topLevelTabs }) => {
             animated={false}
             allowOverflow
           >
-            {childIds.map((id, index) => (
+            {childIds.map((id, index) => {
               // Matching the key of the first TabPane irrespective of topLevelTabs
               // lets us keep the same React component tree when !!topLevelTabs changes.
               // This avoids expensive mounts/unmounts of the entire dashboard.
-              <Tabs.TabPane
-                key={index === 0 ? DASHBOARD_GRID_ID : index.toString()}
-              >
+              if (!getUrlParam(URL_PARAMS.force))
+                return (
+                  <Tabs.TabPane
+                    key={index === 0 ? DASHBOARD_GRID_ID : index.toString()}
+                  >
+                    <DashboardGrid
+                      gridComponent={dashboardLayout[id]}
+                      // see isValidChild for why tabs do not increment the depth of their children
+                      depth={DASHBOARD_ROOT_DEPTH + 1} // (topLevelTabs ? 0 : 1)}
+                      width={width}
+                      isComponentVisible={index === tabIndex}
+                    />
+                  </Tabs.TabPane>
+                );
+              return (
                 <DashboardGrid
                   gridComponent={dashboardLayout[id]}
                   // see isValidChild for why tabs do not increment the depth of their children
@@ -250,8 +264,8 @@ const DashboardContainer: FC<DashboardContainerProps> = ({ topLevelTabs }) => {
                   width={width}
                   isComponentVisible={index === tabIndex}
                 />
-              </Tabs.TabPane>
-            ))}
+              );
+            })}
           </Tabs>
         )}
       </ParentSize>

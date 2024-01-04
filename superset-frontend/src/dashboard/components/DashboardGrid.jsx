@@ -16,10 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import React from 'react';
 import PropTypes from 'prop-types';
+import React from 'react';
 import { addAlpha, css, styled, t } from '@superset-ui/core';
 import { EmptyStateBig } from 'src/components/EmptyState';
+import { URL_PARAMS } from 'src/constants';
+import { getUrlParam } from 'src/utils/urlUtils';
 import { componentShape } from '../util/propShapes';
 import DashboardComponent from '../containers/DashboardComponent';
 import DragDroppable from './dnd/DragDroppable';
@@ -119,6 +121,36 @@ class DashboardGrid extends React.PureComponent {
     this.getRowGuidePosition = this.getRowGuidePosition.bind(this);
     this.setGridRef = this.setGridRef.bind(this);
     this.handleChangeTab = this.handleChangeTab.bind(this);
+    this.setCustomStyle = this.setCustomStyle.bind(this);
+  }
+
+  componentDidUpdate() {
+    if (getUrlParam(URL_PARAMS.force)) {
+      const nodes = document.getElementsByClassName('dashboard-component');
+
+      for (const node of nodes) {
+        this.setCustomStyle(node);
+      }
+    }
+  }
+
+  setCustomStyle(node) {
+    if (typeof node.className === 'string') {
+      if (node.className === 'mapboxgl-control-container') return;
+      if (node.className.includes('ant-dropdown')) return;
+      if (node.className.includes('header-controls')) return;
+    }
+
+    if (node && node.style && node.className !== 'header-controls') {
+      const editedNode = node;
+      editedNode.style.height = 'auto';
+    }
+
+    if (node.children.length > 0) {
+      for (const comp of node.children) {
+        this.setCustomStyle(comp);
+      }
+    }
   }
 
   getRowGuidePosition(resizeRef) {
