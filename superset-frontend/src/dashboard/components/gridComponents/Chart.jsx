@@ -216,7 +216,7 @@ class Chart extends React.Component {
         for (const node of nodes) {
           this.setCustomStyle(node);
         }
-      }, 1000);
+      }, 3000);
     }
 
     // `cacheBusterProp` is jected by react-hot-loader
@@ -388,7 +388,12 @@ class Chart extends React.Component {
       if (node.className.includes('header-controls')) return;
     }
 
-    if (node && node.style && node.className !== 'header-controls') {
+    if (
+      node &&
+      !(node instanceof SVGElement) &&
+      !(node instanceof HTMLCanvasElement) &&
+      node instanceof HTMLDivElement
+    ) {
       const editedNode = node;
       editedNode.style.height = 'auto';
     }

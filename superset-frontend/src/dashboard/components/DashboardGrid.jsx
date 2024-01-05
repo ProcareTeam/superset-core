@@ -141,7 +141,12 @@ class DashboardGrid extends React.PureComponent {
       if (node.className.includes('header-controls')) return;
     }
 
-    if (node && node.style && node.className !== 'header-controls') {
+    if (
+      node &&
+      !(node instanceof SVGElement) &&
+      !(node instanceof HTMLCanvasElement) &&
+      node instanceof HTMLDivElement
+    ) {
       const editedNode = node;
       editedNode.style.height = 'auto';
     }

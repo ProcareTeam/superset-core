@@ -22,6 +22,8 @@ import { Resizable } from 're-resizable';
 import cx from 'classnames';
 import { css, styled } from '@superset-ui/core';
 
+import { URL_PARAMS } from 'src/constants';
+import { getUrlParam } from 'src/utils/urlUtils';
 import ResizableHandle from './ResizableHandle';
 import resizableConfig from '../../util/resizableConfig';
 import { GRID_BASE_UNIT, GRID_GUTTER_SIZE } from '../../util/constants';
@@ -254,7 +256,9 @@ class ResizableContainer extends React.PureComponent {
         : (staticWidthMultiple && staticWidthMultiple * widthStep) ||
           staticWidth ||
           undefined,
-      height: adjustableHeight
+      height: getUrlParam(URL_PARAMS.force)
+        ? 'auto'
+        : adjustableHeight
         ? heightStep * heightMultiple
         : (staticHeightMultiple && staticHeightMultiple * heightStep) ||
           staticHeight ||

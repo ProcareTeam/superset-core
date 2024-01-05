@@ -60,14 +60,19 @@ export default function downloadAsImage(
     // See https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/toDataURL#exceptions
     const filter = (node: HTMLElement) => {
       if (typeof node.className === 'string') {
-        return (
-          node.className !== 'mapboxgl-control-container' &&
-          !node.className.includes('ant-dropdown') &&
-          !node.className.includes('header-controls')
-        );
+        if (node.className.includes('mapboxgl-control-container')) return false;
+        if (node.ariaLabel?.includes('visualization')) return false;
+        if (node.className.includes('ant-dropdown')) return false;
+        if (node.className.includes('header-controls')) return false;
       }
 
-      if (node?.style !== undefined && node?.className !== 'header-controls') {
+      if (
+        node &&
+        !(node instanceof SVGElement) &&
+        !(node instanceof HTMLCanvasElement) &&
+        node.style &&
+        node.style.height
+      ) {
         const editedNode: HTMLElement = node;
         editedNode.style.height = 'auto';
       }
