@@ -1,3 +1,4 @@
+/* eslint no-restricted-syntax: 1 */
 /**
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -56,22 +57,58 @@ export default function downloadAsImage(
       );
     }
 
+    const canvasNodes = <HTMLCanvasElement[]>(
+      (<unknown>document.getElementsByTagName('Canvas'))
+    );
+
+    const cloneCanvas = (oldCanvas: HTMLCanvasElement) => {
+      const newCanvas = document.createElement('canvas');
+      const context = newCanvas.getContext('2d');
+
+      newCanvas.width = oldCanvas.width;
+      newCanvas.height = oldCanvas.height;
+
+      context?.drawImage(oldCanvas, 0, 0);
+
+      return newCanvas;
+    };
+
     // Mapbox controls are loaded from different origin, causing CORS error
     // See https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/toDataURL#exceptions
     const filter = (node: HTMLElement) => {
       if (typeof node.className === 'string') {
         if (node.className.includes('mapboxgl-control-container')) return false;
-        if (node.ariaLabel?.includes('visualization')) return false;
         if (node.className.includes('ant-dropdown')) return false;
         if (node.className.includes('header-controls')) return false;
+      }
+
+      if (
+        node instanceof HTMLTableElement ||
+        node instanceof HTMLTableColElement ||
+        node instanceof HTMLTableCellElement ||
+        node instanceof HTMLTableRowElement
+      ) {
+        return true;
+      }
+
+      if (node instanceof HTMLCanvasElement) {
+        for (const canvasNode of canvasNodes) {
+          const castedNode = <HTMLCanvasElement>node;
+          if (
+            canvasNode.width === castedNode.width &&
+            canvasNode.height === castedNode.height
+          ) {
+            const parentDiv = node.parentNode;
+            parentDiv?.replaceChild(cloneCanvas(canvasNode), node);
+          }
+        }
       }
 
       if (
         node &&
         !(node instanceof SVGElement) &&
         !(node instanceof HTMLCanvasElement) &&
-        node.style &&
-        node.style.height
+        node.style
       ) {
         const editedNode: HTMLElement = node;
         editedNode.style.height = 'auto';
