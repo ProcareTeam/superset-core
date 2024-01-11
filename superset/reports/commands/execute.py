@@ -242,7 +242,11 @@ class BaseReportState:
             ) from ex
         if not image:
             raise ReportScheduleScreenshotFailedError()
-        return [image]
+
+        if isinstance(image, list):
+            return image
+        else:
+            return [image]
 
     def _get_csv_data(self) -> bytes:
         url = self._get_url(result_format=ChartDataResultFormat.CSV)

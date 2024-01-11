@@ -257,13 +257,15 @@ const DashboardContainer: FC<DashboardContainerProps> = ({ topLevelTabs }) => {
                   </Tabs.TabPane>
                 );
               return (
-                <DashboardGrid
-                  gridComponent={dashboardLayout[id]}
-                  // see isValidChild for why tabs do not increment the depth of their children
-                  depth={DASHBOARD_ROOT_DEPTH + 1} // (topLevelTabs ? 0 : 1)}
-                  width={width}
-                  isComponentVisible={index === tabIndex}
-                />
+                <div className="standalone-tab" key={index.toString()}>
+                  <DashboardGrid
+                    gridComponent={dashboardLayout[id]}
+                    // see isValidChild for why tabs do not increment the depth of their children
+                    depth={DASHBOARD_ROOT_DEPTH + 1} // (topLevelTabs ? 0 : 1)}
+                    width={width}
+                    isComponentVisible={index === tabIndex}
+                  />
+                </div>
               );
             })}
           </Tabs>

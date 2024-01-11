@@ -169,6 +169,7 @@ class WebDriverProxy:
         driver.set_window_size(*self._window)
         driver.get(url)
         img: bytes | None = None
+        screenshots = []
         selenium_headstart = current_app.config["SCREENSHOT_SELENIUM_HEADSTART"]
         logger.debug("Sleeping for %i seconds", selenium_headstart)
         sleep(selenium_headstart)
@@ -179,8 +180,8 @@ class WebDriverProxy:
                 logger.debug(
                     "Wait for the presence of %s at url: %s", element_name, url
                 )
-                element = WebDriverWait(driver, self._screenshot_locate_wait).until(
-                    EC.presence_of_element_located((By.CLASS_NAME, element_name))
+                elements = WebDriverWait(driver, self._screenshot_locate_wait).until(
+                    EC.presence_of_all_elements_located((By.CLASS_NAME, element_name))
                 )
             except TimeoutException as ex:
                 logger.exception("Selenium timed out requesting url %s", url)
@@ -236,7 +237,10 @@ class WebDriverProxy:
                         unexpected_errors,
                     )
 
-            img = element.screenshot_as_png
+            for i, element in enumerate(elements):
+                driver.execute_script("arguments[0].scrollIntoView();", element)
+                img = element.screenshot_as_png
+                screenshots.append(img)
         except TimeoutException:
             # raise again for the finally block, but handled above
             pass
@@ -251,4 +255,4 @@ class WebDriverProxy:
             )
         finally:
             self.destroy(driver, current_app.config["SCREENSHOT_SELENIUM_RETRIES"])
-        return img
+        return screenshots
