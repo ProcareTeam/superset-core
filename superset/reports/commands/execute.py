@@ -195,12 +195,45 @@ class BaseReportState:
             **kwargs,
         )
 
+    def _get_charts_url(
+        self,
+        user_friendly: bool = False,
+        result_format: Optional[ChartDataResultFormat] = None,
+        **kwargs: Any,
+    ) -> str:
+        """
+        Get the url for this report schedule: chart or dashboard
+        """
+        force = "true" if self._report_schedule.force_screenshot else "false"
+        if self._report_schedule.chart:
+            if result_format in {
+                ChartDataResultFormat.CSV,
+                ChartDataResultFormat.JSON,
+            }:
+                # TODO: Needs to get urls for multi charts with CSV option
+                return get_url_path(
+                    "ChartDataRestApi.get_data",
+                    pk=self._report_schedule.chart_id,
+                    format=result_format.value,
+                    type=ChartDataResultType.POST_PROCESSED.value,
+                    force=force,
+                )
+            urls = []
+            for chart_id in self._report_schedule.chart_ids.split(','):
+                urls.append(get_url_path(
+                    "ExploreView.root",
+                    user_friendly=user_friendly,
+                    form_data=json.dumps({"slice_id": chart_id}),
+                    force=force,
+                    **kwargs,
+                ))
+            return urls
+    
     def _get_screenshots(self) -> list[bytes]:
         """
         Get chart or dashboard screenshots
         :raises: ReportScheduleScreenshotFailedError
         """
-        url = self._get_url()
         _, username = get_executor(
             executor_types=app.config["ALERT_REPORTS_EXECUTE_AS"],
             model=self._report_schedule,
@@ -208,18 +241,33 @@ class BaseReportState:
         user = security_manager.find_user(username)
 
         if self._report_schedule.chart:
+            images = []
+            urls = self._get_charts_url()
             window_width, window_height = app.config["WEBDRIVER_WINDOW"]["slice"]
             window_size = (
                 self._report_schedule.custom_width or window_width,
                 self._report_schedule.custom_height or window_height,
             )
-            screenshot: Union[ChartScreenshot, DashboardScreenshot] = ChartScreenshot(
-                url,
-                self._report_schedule.chart.digest,
-                window_size=window_size,
-                thumb_size=app.config["WEBDRIVER_WINDOW"]["slice"],
-            )
+            try:
+                for url in urls:
+                    screenshot: Union[ChartScreenshot, DashboardScreenshot] = ChartScreenshot(
+                        url,
+                        self._report_schedule.chart.digest,
+                        window_size=window_size,
+                        thumb_size=app.config["WEBDRIVER_WINDOW"]["slice"],
+                    )
+                    images.append(screenshot.get_screenshot(user=user)[0])
+            except SoftTimeLimitExceeded as ex:
+                logger.warning("A timeout occurred while taking a screenshot.")
+                raise ReportScheduleScreenshotTimeout() from ex
+            except Exception as ex:
+                raise ReportScheduleScreenshotFailedError(
+                    f"Failed taking a screenshot {str(ex)}"
+                ) from ex
+            if not images:
+                raise ReportScheduleScreenshotFailedError()
         else:
+            url = self._get_url()
             window_width, window_height = app.config["WEBDRIVER_WINDOW"]["dashboard"]
             window_size = (
                 self._report_schedule.custom_width or window_width,
@@ -231,22 +279,18 @@ class BaseReportState:
                 window_size=window_size,
                 thumb_size=app.config["WEBDRIVER_WINDOW"]["dashboard"],
             )
-        try:
-            image = screenshot.get_screenshot(user=user)
-        except SoftTimeLimitExceeded as ex:
-            logger.warning("A timeout occurred while taking a screenshot.")
-            raise ReportScheduleScreenshotTimeout() from ex
-        except Exception as ex:
-            raise ReportScheduleScreenshotFailedError(
-                f"Failed taking a screenshot {str(ex)}"
-            ) from ex
-        if not image:
-            raise ReportScheduleScreenshotFailedError()
-
-        if isinstance(image, list):
-            return image
-        else:
-            return [image]
+            try:
+                images = screenshot.get_screenshot(user=user)
+            except SoftTimeLimitExceeded as ex:
+                logger.warning("A timeout occurred while taking a screenshot.")
+                raise ReportScheduleScreenshotTimeout() from ex
+            except Exception as ex:
+                raise ReportScheduleScreenshotFailedError(
+                    f"Failed taking a screenshot {str(ex)}"
+                ) from ex
+            if not images:
+                raise ReportScheduleScreenshotFailedError()
+        return images
 
     def _get_csv_data(self) -> bytes:
         url = self._get_url(result_format=ChartDataResultFormat.CSV)
@@ -357,6 +401,8 @@ class BaseReportState:
         screenshot_data = []
         header_data = self._get_log_data()
         url = self._get_url(user_friendly=True)
+        titles = []
+
         if (
             feature_flag_manager.is_feature_enabled("ALERTS_ATTACH_REPORTS")
             or self._report_schedule.type == ReportScheduleType.REPORT
@@ -386,18 +432,22 @@ class BaseReportState:
             embedded_data = self._get_embedded_data()
 
         if self._report_schedule.chart:
-            name = (
-                f"{self._report_schedule.name}: "
-                f"{self._report_schedule.chart.slice_name}"
-            )
+            for title in self._report_schedule.chart_slices.split(','):
+                titles.append((
+                    f"{self._report_schedule.name}: "
+                    f"{title}"
+                ))
+            name = self._report_schedule.name
         else:
             name = (
                 f"{self._report_schedule.name}: "
                 f"{self._report_schedule.dashboard.dashboard_title}"
             )
+            titles.append(name)
 
         return NotificationContent(
             name=name,
+            titles=titles,
             url=url,
             screenshots=screenshot_data,
             description=self._report_schedule.description,

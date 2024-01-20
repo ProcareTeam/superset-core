@@ -160,6 +160,7 @@ Error: %(text)s
     def send(self) -> None:
         files = self._get_inline_files()
         title = self._content.name
+        titles = self._content.titles
         channel = self._get_channel()
         body = self._get_body()
         file_type = "csv" if self._content.csv else "png"
@@ -170,7 +171,11 @@ Error: %(text)s
             client = WebClient(token=token, proxy=app.config["SLACK_PROXY"])
             # files_upload returns SlackResponse as we run it in sync mode.
             if files:
-                for file in files:
+                for index, file in enumerate(files):
+                    if len(files) > len(titles):
+                        title = titles[0]
+                    else:
+                        title = titles[index]
                     client.files_upload(
                         channels=channel,
                         file=file,

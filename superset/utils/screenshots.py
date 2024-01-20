@@ -221,6 +221,8 @@ class ChartScreenshot(BaseScreenshot):
             url,
             standalone=ChartStandaloneMode.HIDE_NAV.value,
         )
+        print(url)
+
         super().__init__(url, digest)
         self.window_size = window_size or DEFAULT_CHART_WINDOW_SIZE
         self.thumb_size = thumb_size or DEFAULT_CHART_THUMBNAIL_SIZE
@@ -243,6 +245,7 @@ class DashboardScreenshot(BaseScreenshot):
             url,
             standalone=DashboardStandaloneMode.REPORT.value,
         )
+        print(url)
 
         super().__init__(url, digest)
         self.window_size = window_size or DEFAULT_DASHBOARD_WINDOW_SIZE

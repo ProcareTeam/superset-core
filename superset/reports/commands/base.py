@@ -49,6 +49,7 @@ class BaseReportScheduleCommand(BaseCommand):
     ) -> None:
         """Validate chart or dashboard relation"""
         chart_id = self._properties.get("chart")
+        chart_ids = self._properties.get("charts")
         dashboard_id = self._properties.get("dashboard")
         creation_method = self._properties.get("creation_method")
 
@@ -61,7 +62,7 @@ class BaseReportScheduleCommand(BaseCommand):
             exceptions.append(DashboardNotSavedValidationError())
             return
 
-        if chart_id and dashboard_id:
+        if (chart_id or chart_ids) and dashboard_id:
             exceptions.append(ReportScheduleOnlyChartOrDashboardError())
 
         if chart_id:
@@ -69,6 +70,11 @@ class BaseReportScheduleCommand(BaseCommand):
             if not chart:
                 exceptions.append(ChartNotFoundValidationError())
             self._properties["chart"] = chart
+        if chart_ids:
+            charts = ChartDAO.find_by_ids(chart_ids)
+            if not charts:
+                exceptions.append(ChartNotFoundValidationError())
+            self._properties["charts"] = charts
         elif dashboard_id:
             dashboard = DashboardDAO.find_by_id(dashboard_id)
             if not dashboard:

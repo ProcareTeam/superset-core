@@ -619,7 +619,22 @@ const AlertReportModal: FunctionComponent<AlertReportModalProps> = ({
       validator_config_json: conditionNotNull
         ? {}
         : currentAlert?.validator_config_json,
-      chart: contentType === 'chart' ? currentAlert?.chart?.value : null,
+      chart:
+        contentType === 'chart'
+          ? currentAlert?.charts?.map(chart => chart.value)[0]
+          : null,
+      charts:
+        contentType === 'chart'
+          ? currentAlert?.charts?.map(chart => chart.value)
+          : null,
+      chart_ids:
+        contentType === 'chart'
+          ? currentAlert?.charts?.map(chart => chart.value).join(',')
+          : null,
+      chart_slices:
+        contentType === 'chart'
+          ? currentAlert?.charts?.map(chart => chart.label).join(',')
+          : null,
       dashboard:
         contentType === 'dashboard' ? currentAlert?.dashboard?.value : null,
       database: currentAlert?.database?.value,
@@ -812,6 +827,21 @@ const AlertReportModal: FunctionComponent<AlertReportModalProps> = ({
     return result;
   };
 
+  const getChartsData = useCallback(
+    (chartIds: string, chartSlices: string) => {
+      const chartArr = chartIds.split(',') || currentAlert?.chart_ids;
+      const chartSliceLabels =
+        chartSlices.split(',') || currentAlert?.chart_slices;
+      const result = chartArr.map((item, index) => ({
+        value: parseInt(item, 10),
+        label: chartSliceLabels?.at(index),
+      }));
+
+      return result;
+    },
+    [chartOptions, currentAlert?.chart_ids, currentAlert?.chart_slices],
+  );
+
   const getChartData = useCallback(
     (chartData?: MetaObject) => {
       const chart = chartData || currentAlert?.chart;
@@ -867,10 +897,12 @@ const AlertReportModal: FunctionComponent<AlertReportModalProps> = ({
     [],
   );
 
+  /*
   const getChartVisualizationType = (chart: SelectValue) =>
     SupersetClient.get({
       endpoint: `/api/v1/chart/${chart.value}`,
     }).then(response => setChartVizType(response.json.result.viz_type));
+  */
 
   // Handle input/textarea updates
   const onInputChange = (
@@ -918,9 +950,17 @@ const AlertReportModal: FunctionComponent<AlertReportModalProps> = ({
     updateAlertState('chart', null);
   };
 
+  /*
   const onChartChange = (chart: SelectValue) => {
     getChartVisualizationType(chart);
     updateAlertState('chart', chart || undefined);
+    updateAlertState('dashboard', null);
+  };
+  */
+
+  const onChartsChange = (charts: SelectValue) => {
+    // getChartVisualizationType(chart);
+    updateAlertState('charts', charts || undefined);
     updateAlertState('dashboard', null);
   };
 
@@ -1002,7 +1042,7 @@ const AlertReportModal: FunctionComponent<AlertReportModalProps> = ({
       currentAlert?.crontab?.length &&
       currentAlert?.working_timeout !== undefined &&
       ((contentType === 'dashboard' && !!currentAlert?.dashboard) ||
-        (contentType === 'chart' && !!currentAlert?.chart)) &&
+        (contentType === 'chart' && !!currentAlert?.charts)) &&
       checkNotificationSettings()
     ) {
       if (isReport) {
@@ -1101,6 +1141,11 @@ const AlertReportModal: FunctionComponent<AlertReportModalProps> = ({
               label: (resource.chart as ChartObject).slice_name,
             }
           : undefined,
+        charts:
+          resource.chart_ids && resource.chart_slices
+            ? getChartsData(resource.chart_ids, resource.chart_slices) ||
+              undefined
+            : undefined,
         dashboard: resource.dashboard
           ? getDashboardData(resource.dashboard) || {
               value: (resource.dashboard as DashboardObject).id,
@@ -1441,20 +1486,34 @@ const AlertReportModal: FunctionComponent<AlertReportModalProps> = ({
               <StyledRadio value="chart">{TRANSLATIONS.CHART_TEXT}</StyledRadio>
             </Radio.Group>
             {contentType === 'chart' ? (
-              <AsyncSelect
-                ariaLabel={TRANSLATIONS.CHART_TEXT}
-                name="chart"
-                value={
-                  currentAlert?.chart?.label && currentAlert?.chart?.value
-                    ? {
-                        value: currentAlert.chart.value,
-                        label: currentAlert.chart.label,
-                      }
-                    : undefined
-                }
-                options={loadChartOptions}
-                onChange={onChartChange}
-              />
+              <>
+                {/* <AsyncSelect
+                  ariaLabel={TRANSLATIONS.CHART_TEXT}
+                  name="chart"
+                  value={
+                    currentAlert?.chart?.label && currentAlert?.chart?.value
+                      ? {
+                          value: currentAlert.chart.value,
+                          label: currentAlert.chart.label,
+                        }
+                      : undefined
+                  }
+                  options={loadChartOptions}
+                  onChange={onChartChange}
+                /> */}
+                <AsyncSelect
+                  ariaLabel={TRANSLATIONS.CHART_TEXT}
+                  mode="multiple"
+                  name="chart"
+                  value={
+                    currentAlert?.charts && currentAlert?.charts?.length > 0
+                      ? currentAlert.charts
+                      : undefined
+                  }
+                  options={loadChartOptions}
+                  onChange={onChartsChange}
+                />
+              </>
             ) : (
               <AsyncSelect
                 ariaLabel={TRANSLATIONS.DASHBOARD_TEXT}
@@ -1482,9 +1541,9 @@ const AlertReportModal: FunctionComponent<AlertReportModalProps> = ({
                     <StyledRadio value="PNG">
                       {TRANSLATIONS.SEND_AS_PNG_TEXT}
                     </StyledRadio>
-                    <StyledRadio value="CSV">
+                    {/* <StyledRadio value="CSV">
                       {TRANSLATIONS.SEND_AS_CSV_TEXT}
-                    </StyledRadio>
+                    </StyledRadio> */}
                     {TEXT_BASED_VISUALIZATION_TYPES.includes(chartVizType) && (
                       <StyledRadio value="TEXT">
                         {TRANSLATIONS.SEND_AS_TEXT}

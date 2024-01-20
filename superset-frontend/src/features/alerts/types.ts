@@ -19,6 +19,7 @@
 
 import Owner from 'src/types/Owner';
 import { NOTIFICATION_FORMATS } from 'src/reports/types';
+import { AnyArray } from 'immer/dist/internal';
 
 type user = {
   id: number;
@@ -62,6 +63,9 @@ export type AlertObject = {
   active?: boolean;
   creation_method?: string;
   chart?: MetaObject;
+  charts?: AnyArray;
+  chart_ids: string;
+  chart_slices: string;
   changed_by?: user;
   changed_on_delta_humanized?: string;
   chart_id: number;

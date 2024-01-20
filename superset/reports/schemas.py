@@ -168,6 +168,13 @@ class ReportSchedulePostSchema(Schema):
         }
     )
     chart = fields.Integer(required=False, allow_none=True)
+    charts = fields.List(
+        fields.Integer(required=False, allow_none=True), 
+        required=False,
+        allow_none=True
+    )
+    chart_ids = fields.String(required=False, allow_none=True)
+    chart_slices = fields.String(required=False, allow_none=True)
     creation_method = fields.Enum(
         ReportCreationMethod,
         by_value=True,
@@ -295,6 +302,13 @@ class ReportSchedulePutSchema(Schema):
         allow_none=True,
     )
     chart = fields.Integer(required=False, allow_none=True)
+    charts = fields.List(
+        fields.Integer(required=False, allow_none=True), 
+        required=False,
+        allow_none=True
+    )
+    chart_ids = fields.String(required=False, allow_none=True)
+    chart_slices = fields.String(required=False, allow_none=True)
     creation_method = fields.Enum(
         ReportCreationMethod,
         by_value=True,

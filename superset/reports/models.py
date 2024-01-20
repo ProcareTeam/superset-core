@@ -85,6 +85,22 @@ class ReportSourceFormat(StrEnum):
     CHART = "chart"
     DASHBOARD = "dashboard"
 
+report_schedule_chart_slices = Table(
+    "report_schedule_chart_slices",
+    metadata,
+    Column("id", Integer, primary_key=True),
+    Column(
+        "chart_id",
+        Integer,
+        ForeignKey("slices.id", ondelete="CASCADE")),
+    Column(
+        "report_schedule_id",
+        Integer,
+        ForeignKey("report_schedule.id", ondelete="CASCADE"),
+        nullable=False,
+    ),
+    UniqueConstraint("chart_id", "report_schedule_id"),
+)
 
 report_schedule_user = Table(
     "report_schedule_user",
@@ -131,6 +147,13 @@ class ReportSchedule(Model, AuditMixinNullable, ExtraJSONMixin):
     # (Alerts/Reports) M-O to chart
     chart_id = Column(Integer, ForeignKey("slices.id"), nullable=True)
     chart = relationship(Slice, backref="report_schedules", foreign_keys=[chart_id])
+    # (Alerts/Reports) M-O to charts
+    charts: relationship(
+        Slice, 
+        secondary=report_schedule_chart_slices
+    )
+    chart_ids = Column(String(150), nullable=True)
+    chart_slices = Column(String(1000), nullable=True)
     # (Alerts/Reports) M-O to dashboard
     dashboard_id = Column(Integer, ForeignKey("dashboards.id"), nullable=True)
     dashboard = relationship(
