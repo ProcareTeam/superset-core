@@ -62,6 +62,8 @@ interface RenderProps {
   chartProps: ChartProps;
   preTransformProps?: PreTransformProps;
   postTransformProps?: PostTransformProps;
+  force: boolean;
+  standalone: boolean;
 }
 
 const BLANK_CHART_PROPS = new ChartProps();
@@ -71,6 +73,8 @@ export type Props = {
   className?: string;
   chartProps?: ChartProps | null;
   chartType: string;
+  force?: boolean;
+  standalone?: boolean;
   preTransformProps?: PreTransformProps;
   overrideTransformProps?: TransformProps;
   postTransformProps?: PostTransformProps;
@@ -152,7 +156,13 @@ export default class SuperChartCore extends React.PureComponent<Props, {}> {
 
   private renderChart = (loaded: LoadedModules, props: RenderProps) => {
     const { Chart, transformProps } = loaded;
-    const { chartProps, preTransformProps, postTransformProps } = props;
+    const {
+      force,
+      standalone,
+      chartProps,
+      preTransformProps,
+      postTransformProps,
+    } = props;
 
     return (
       <Chart
@@ -162,6 +172,8 @@ export default class SuperChartCore extends React.PureComponent<Props, {}> {
           transformProps,
           postTransformProps,
         })}
+        force={force}
+        standalone={standalone}
       />
     );
   };
@@ -190,6 +202,8 @@ export default class SuperChartCore extends React.PureComponent<Props, {}> {
     const {
       id,
       className,
+      force = false,
+      standalone = false,
       preTransformProps,
       postTransformProps,
       chartProps = BLANK_CHART_PROPS,
@@ -225,6 +239,8 @@ export default class SuperChartCore extends React.PureComponent<Props, {}> {
           preTransformProps={preTransformProps}
           postTransformProps={postTransformProps}
           chartProps={chartProps}
+          force={force}
+          standalone={standalone}
           onRenderSuccess={onRenderSuccess}
           onRenderFailure={onRenderFailure}
         />

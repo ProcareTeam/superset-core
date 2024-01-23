@@ -227,6 +227,8 @@ export default function TableChart<D extends DataRecord = DataRecord>(
     showCellBars = true,
     sortDesc = false,
     filters,
+    force,
+    standalone,
     sticky = true, // whether to use sticky header
     columnColorFormatters,
     allowRearrangeColumns = false,
@@ -703,6 +705,8 @@ export default function TableChart<D extends DataRecord = DataRecord>(
         pageSizeOptions={pageSizeOptions}
         width={widthFromState}
         height={heightFromState}
+        force={force}
+        standalone={standalone}
         serverPagination={serverPagination}
         onServerPaginationChange={handleServerPaginationChange}
         onColumnOrderChange={() => setColumnOrderToggle(!columnOrderToggle)}

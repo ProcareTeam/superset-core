@@ -242,7 +242,7 @@ const ExploreChartPanel = ({
         css={css`
           min-height: 0;
           flex: 1;
-          overflow: auto;
+          overflow: ${standalone && force ? 'visible' : 'auto'};
         `}
         ref={chartPanelRef}
       >
@@ -258,6 +258,7 @@ const ExploreChartPanel = ({
             chartStatus={chart.chartStatus}
             triggerRender={triggerRender}
             force={force}
+            standalone={standalone}
             datasource={datasource}
             errorMessage={errorMessage}
             formData={formData}
@@ -290,6 +291,7 @@ const ExploreChartPanel = ({
       datasource,
       errorMessage,
       force,
+      standalone,
       formData,
       onQuery,
       ownState,

@@ -63,6 +63,7 @@ const propTypes = {
   vizType: PropTypes.string.isRequired,
   triggerRender: PropTypes.bool,
   force: PropTypes.bool,
+  standalone: PropTypes.bool,
   isFiltersInitialized: PropTypes.bool,
   // state
   chartAlert: PropTypes.string,

@@ -117,6 +117,8 @@ describe('SuperChart', () => {
           queriesData={[DEFAULT_QUERY_DATA]}
           width="200"
           height="200"
+          force={false}
+          standalone={false}
         />,
       );
       await new Promise(resolve => setImmediate(resolve));
@@ -134,6 +136,8 @@ describe('SuperChart', () => {
           queriesData={[DEFAULT_QUERY_DATA]}
           width="200"
           height="200"
+          force={false}
+          standalone={false}
           FallbackComponent={CustomFallbackComponent}
         />,
       );
@@ -152,6 +156,8 @@ describe('SuperChart', () => {
           queriesData={[DEFAULT_QUERY_DATA]}
           width="200"
           height="200"
+          force={false}
+          standalone={false}
           onErrorBoundary={handleError}
         />,
       );
@@ -172,6 +178,8 @@ describe('SuperChart', () => {
             queriesData={[DEFAULT_QUERY_DATA]}
             width="200"
             height="200"
+            force={false}
+            standalone={false}
             onErrorBoundary={inactiveErrorHandler}
           />
         </ErrorBoundary>,
@@ -191,6 +199,8 @@ describe('SuperChart', () => {
         queriesData={[DEFAULT_QUERY_DATA]}
         width={101}
         height={118}
+        force={false}
+        standalone={false}
         formData={{ abc: 1 }}
       />,
     );
@@ -209,6 +219,8 @@ describe('SuperChart', () => {
         queriesData={DEFAULT_QUERIES_DATA}
         width={101}
         height={118}
+        force={false}
+        standalone={false}
         formData={{ abc: 1 }}
       />,
     );
@@ -227,6 +239,8 @@ describe('SuperChart', () => {
         queriesData={DEFAULT_QUERIES_DATA}
         width={101}
         height={118}
+        force={false}
+        standalone={false}
         formData={{ abc: 1 }}
       />,
     );
@@ -241,7 +255,13 @@ describe('SuperChart', () => {
   describe('supports NoResultsComponent', () => {
     it('renders NoResultsComponent when queriesData is missing', () => {
       const wrapper = mount(
-        <SuperChart chartType={ChartKeys.DILIGENT} width="200" height="200" />,
+        <SuperChart
+          chartType={ChartKeys.DILIGENT}
+          width="200"
+          height="200"
+          force={false}
+          standalone={false}
+        />,
       );
 
       expect(wrapper.find(NoResultsComponent)).toHaveLength(1);
@@ -254,6 +274,8 @@ describe('SuperChart', () => {
           queriesData={[{ data: null }]}
           width="200"
           height="200"
+          force={false}
+          standalone={false}
         />,
       );
 
@@ -269,6 +291,8 @@ describe('SuperChart', () => {
           queriesData={[DEFAULT_QUERY_DATA]}
           width={100}
           height={100}
+          force={false}
+          standalone={false}
         />,
       );
 
@@ -286,6 +310,8 @@ describe('SuperChart', () => {
           debounceTime={1}
           width="100%"
           height="100%"
+          force={false}
+          standalone={false}
         />,
       );
       triggerResizeObserver();
@@ -304,6 +330,8 @@ describe('SuperChart', () => {
           debounceTime={1}
           width="50%"
           height="125"
+          force={false}
+          standalone={false}
         />,
       );
       // @ts-ignore
@@ -330,6 +358,8 @@ describe('SuperChart', () => {
           debounceTime={1}
           width="50"
           height="25%"
+          force={false}
+          standalone={false}
         />,
       );
       // @ts-ignore
@@ -354,6 +384,8 @@ describe('SuperChart', () => {
           chartType={ChartKeys.DILIGENT}
           queriesData={[DEFAULT_QUERY_DATA]}
           debounceTime={1}
+          force={false}
+          standalone={false}
         />,
       );
       triggerResizeObserver();
@@ -385,6 +417,8 @@ describe('SuperChart', () => {
           queriesData={[DEFAULT_QUERY_DATA]}
           width={100}
           height={100}
+          force={false}
+          standalone={false}
           Wrapper={MyWrapper}
         />,
       );
@@ -408,6 +442,8 @@ describe('SuperChart', () => {
           debounceTime={1}
           width="100%"
           height="100%"
+          force={false}
+          standalone={false}
           Wrapper={MyWrapper}
         />,
       );

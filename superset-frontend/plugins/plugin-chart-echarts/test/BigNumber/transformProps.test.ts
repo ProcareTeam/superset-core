@@ -99,6 +99,8 @@ function generateProps(
     filterState: {},
     behaviors: [],
     theme: supersetTheme,
+    force: false,
+    standalone: false,
   };
 }
 
