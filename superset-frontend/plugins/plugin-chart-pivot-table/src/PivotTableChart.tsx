@@ -45,9 +45,9 @@ import {
 } from './types';
 
 const Styles = styled.div<PivotTableStylesProps>`
-  ${({ height, width, margin }) => `
+  ${({ height, width, margin, force, standalone }) => `
       margin: ${margin}px;
-      height: ${height - margin * 2}px;
+      height: ${force && standalone ? 'auto' : `${height - margin * 2}px`};
       width: ${
         typeof width === 'string' ? parseInt(width, 10) : width - margin * 2
       }px;
@@ -154,6 +154,8 @@ export default function PivotTableChart(props: PivotTableProps) {
     dateFormatters,
     onContextMenu,
     timeGrainSqla,
+    force,
+    standalone,
   } = props;
 
   const theme = useTheme();
@@ -537,7 +539,13 @@ export default function PivotTableChart(props: PivotTableProps) {
   );
 
   return (
-    <Styles height={height} width={width} margin={theme.gridUnit * 4}>
+    <Styles
+      height={height}
+      width={width}
+      margin={theme.gridUnit * 4}
+      force={force}
+      standalone={standalone}
+    >
       <PivotTableWrapper>
         <PivotTable
           data={unpivotedData}

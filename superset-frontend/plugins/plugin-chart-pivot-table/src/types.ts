@@ -36,6 +36,8 @@ export interface PivotTableStylesProps {
   height: number;
   width: number | string;
   margin: number;
+  force?: boolean;
+  standalone?: boolean;
 }
 
 export type FilterType = Record<string, DataRecordValue>;
@@ -87,6 +89,8 @@ interface PivotTableCustomizeProps {
   timeGrainSqla?: TimeGranularity;
   time_grain_sqla?: TimeGranularity;
   granularity_sqla?: string;
+  force?: boolean;
+  standalone?: boolean;
 }
 
 export type PivotTableQueryFormData = QueryFormData &
