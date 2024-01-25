@@ -239,6 +239,11 @@ class WebDriverProxy:
 
             for i, element in enumerate(elements):
                 driver.execute_script("arguments[0].scrollIntoView();", element)
+                exactWidth = element.get_property("offsetWidth")
+                exactHeight = element.get_property("offsetHeight")
+                if exactWidth and exactHeight:
+                    driver.set_window_size(int(exactWidth), int(float(exactHeight))+20)
+
                 img = element.screenshot_as_png
                 screenshots.append(img)
         except TimeoutException:

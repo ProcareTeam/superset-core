@@ -82,6 +82,8 @@ export interface StickyState {
 
 export interface UseStickyTableOptions {
   getTableSize?: GetTableSize;
+  force: boolean;
+  standalone: boolean;
 }
 
 export interface UseStickyInstanceProps {
@@ -320,7 +322,7 @@ function StickyWrap({
     <div
       style={{
         width: maxWidth,
-        height: sticky.realHeight || maxHeight,
+        height: force && standalone ? 'auto' : sticky.realHeight || maxHeight,
         overflow: force && standalone ? 'visible' : 'hidden',
       }}
     >

@@ -105,6 +105,7 @@ const defaultProps = {
 
 const Styles = styled.div`
   min-height: ${p => p.height}px;
+  height: ${p => (p.force && p.standalone ? 'auto' : `${p.height}px`)};
   position: relative;
 
   .chart-tooltip {
@@ -255,6 +256,8 @@ class Chart extends React.PureComponent {
       chartIsStale,
       queriesResponse = [],
       width,
+      force,
+      standalone,
     } = this.props;
 
     const isLoading = chartStatus === 'loading';
@@ -310,6 +313,8 @@ class Chart extends React.PureComponent {
           data-test="chart-container"
           height={height}
           width={width}
+          force={force}
+          standalone={standalone}
         >
           <div className="slice_container" data-test="slice-container">
             {this.props.isInView ||

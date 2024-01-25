@@ -273,6 +273,8 @@ export function useListViewState({
       manualSortBy: true,
       autoResetFilters: false,
       pageCount: Math.ceil(count / initialPageSize),
+      force: false,
+      standalone: false,
     },
     useFilters,
     useSortBy,
