@@ -20,6 +20,7 @@ from __future__ import annotations
 import logging
 from enum import Enum
 from time import sleep
+import time
 from typing import Any, TYPE_CHECKING
 
 from flask import current_app
@@ -243,6 +244,7 @@ class WebDriverProxy:
                 exactHeight = element.get_property("offsetHeight")
                 if exactWidth and exactHeight:
                     driver.set_window_size(int(exactWidth), int(float(exactHeight))+20)
+                time.sleep(10)
 
                 img = element.screenshot_as_png
                 screenshots.append(img)
