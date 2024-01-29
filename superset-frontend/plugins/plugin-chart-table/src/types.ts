@@ -127,7 +127,6 @@ export interface TableChartTransformedProps<D extends DataRecord = DataRecord> {
   // enabled by `includeSearch`
   filters?: DataRecordFilters;
   emitCrossFilters?: boolean;
-  force: boolean;
   standalone: boolean;
   onChangeFilter?: ChartProps['hooks']['onAddFilter'];
   columnColorFormatters?: ColorFormatters;

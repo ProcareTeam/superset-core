@@ -71,7 +71,6 @@ export type Props = Omit<SuperChartCoreProps, 'chartProps'> &
     height?: number | string;
     /** Chart height */
     width?: number | string;
-    force?: boolean;
     standalone?: boolean;
     /**
      * Component to wrap the actual chart
@@ -157,7 +156,6 @@ class SuperChart extends React.PureComponent<Props, {}> {
       id,
       className,
       chartType,
-      force,
       standalone,
       preTransformProps,
       overrideTransformProps,
@@ -210,7 +208,6 @@ class SuperChart extends React.PureComponent<Props, {}> {
           className={className}
           chartType={chartType}
           chartProps={chartProps}
-          force={force}
           standalone={standalone}
           preTransformProps={preTransformProps}
           overrideTransformProps={overrideTransformProps}

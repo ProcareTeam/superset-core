@@ -213,7 +213,6 @@ const transformProps = (
   const {
     height,
     width,
-    force,
     standalone,
     rawFormData: formData,
     queriesData = [],
@@ -293,7 +292,6 @@ const transformProps = (
     columnColorFormatters,
     timeGrain,
     allowRearrangeColumns,
-    force,
     standalone,
     onContextMenu,
   };

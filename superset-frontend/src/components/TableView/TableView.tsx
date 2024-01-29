@@ -158,7 +158,6 @@ const TableView = ({
       manualPagination: serverPagination,
       manualSortBy: serverPagination,
       pageCount: Math.ceil(totalCount / initialState.pageSize),
-      force: false,
       standalone: false,
     },
     useFilters,

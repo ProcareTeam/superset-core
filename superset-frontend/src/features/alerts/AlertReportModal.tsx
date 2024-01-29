@@ -948,6 +948,7 @@ const AlertReportModal: FunctionComponent<AlertReportModalProps> = ({
   const onDashboardChange = (dashboard: SelectValue) => {
     updateAlertState('dashboard', dashboard || undefined);
     updateAlertState('chart', null);
+    updateAlertState('charts', null);
   };
 
   /*
@@ -1042,7 +1043,7 @@ const AlertReportModal: FunctionComponent<AlertReportModalProps> = ({
       currentAlert?.crontab?.length &&
       currentAlert?.working_timeout !== undefined &&
       ((contentType === 'dashboard' && !!currentAlert?.dashboard) ||
-        (contentType === 'chart' && !!currentAlert?.charts)) &&
+        (contentType === 'chart' && !!currentAlert?.charts && currentAlert?.charts.length > 0)) &&
       checkNotificationSettings()
     ) {
       if (isReport) {
@@ -1188,7 +1189,7 @@ const AlertReportModal: FunctionComponent<AlertReportModalProps> = ({
     currentAlertSafe.crontab,
     currentAlertSafe.working_timeout,
     currentAlertSafe.dashboard,
-    currentAlertSafe.chart,
+    currentAlertSafe.charts,
     contentType,
     notificationSettings,
     conditionNotNull,

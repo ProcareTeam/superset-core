@@ -82,7 +82,6 @@ export interface StickyState {
 
 export interface UseStickyTableOptions {
   getTableSize?: GetTableSize;
-  force: boolean;
   standalone: boolean;
 }
 
@@ -91,7 +90,6 @@ export interface UseStickyInstanceProps {
   wrapStickyTable: (renderer: TableRenderer) => ReactNode;
   // update or recompute the sticky table size
   setStickyState: SetStickyState;
-  force: boolean;
   standalone: boolean;
 }
 
@@ -119,7 +117,6 @@ function StickyWrap({
   width: maxWidth,
   height: maxHeight,
   children: table,
-  force,
   standalone,
   setStickyState,
 }: {
@@ -127,7 +124,6 @@ function StickyWrap({
   height: number;
   setStickyState: SetStickyState;
   children: Table;
-  force: boolean;
   standalone: boolean;
   sticky?: StickyState; // current sticky element sizes
 }) {
@@ -303,7 +299,7 @@ function StickyWrap({
         key="body"
         ref={scrollBodyRef}
         style={{
-          height: force && standalone ? 'auto' : bodyHeight,
+          height: standalone ? 'auto' : bodyHeight,
           overflow: 'auto',
         }}
         onScroll={sticky.hasHorizontalScroll ? onScroll : undefined}
@@ -322,8 +318,8 @@ function StickyWrap({
     <div
       style={{
         width: maxWidth,
-        height: force && standalone ? 'auto' : sticky.realHeight || maxHeight,
-        overflow: force && standalone ? 'visible' : 'hidden',
+        height: standalone ? 'auto' : sticky.realHeight || maxHeight,
+        overflow: standalone ? 'visible' : 'hidden',
       }}
     >
       {headerTable}
@@ -381,7 +377,6 @@ function useInstance<D extends object>(instance: TableInstance<D>) {
         width={width}
         height={height}
         sticky={sticky}
-        force={instance.force}
         standalone={instance.standalone}
         setStickyState={setStickyState}
       >

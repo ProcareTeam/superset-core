@@ -54,7 +54,6 @@ const propTypes = {
   queriesResponse: PropTypes.arrayOf(PropTypes.object),
   triggerQuery: PropTypes.bool,
   chartIsStale: PropTypes.bool,
-  force: PropTypes.bool,
   standalone: PropTypes.bool,
   // dashboard callbacks
   addFilter: PropTypes.func,
@@ -265,7 +264,6 @@ class ChartRenderer extends React.Component {
       chartIsStale,
       formData,
       standalone,
-      force,
       latestQueryFormData,
       postTransformProps,
     } = this.props;
@@ -359,7 +357,6 @@ class ChartRenderer extends React.Component {
             filterState={filterState}
             hooks={this.hooks}
             behaviors={behaviors}
-            force={force}
             standalone={standalone}
             queriesData={this.mutableQueriesResponse}
             onRenderSuccess={this.handleRenderSuccess}

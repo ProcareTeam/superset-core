@@ -159,8 +159,6 @@ export default class ChartProps<FormData extends RawFormData = RawFormData> {
 
   theme: SupersetTheme;
 
-  force: boolean;
-
   standalone: boolean;
 
   constructor(config: ChartPropsConfig & { formData?: FormData } = {}) {

@@ -36,7 +36,6 @@ export interface PivotTableStylesProps {
   height: number;
   width: number | string;
   margin: number;
-  force?: boolean;
   standalone?: boolean;
 }
 
@@ -89,7 +88,6 @@ interface PivotTableCustomizeProps {
   timeGrainSqla?: TimeGranularity;
   time_grain_sqla?: TimeGranularity;
   granularity_sqla?: string;
-  force?: boolean;
   standalone?: boolean;
 }
 

@@ -64,7 +64,6 @@ export interface DataTableProps<D extends object> extends TableOptions<D> {
   pageSize?: number;
   noResults?: string | ((filterString: string) => ReactNode);
   sticky?: boolean;
-  force: boolean;
   standalone: boolean;
   rowCount: number;
   wrapperRef?: MutableRefObject<HTMLDivElement>;
@@ -94,7 +93,6 @@ export default typedMemo(function DataTable<D extends object>({
   sticky: doSticky,
   searchInput = true,
   onServerPaginationChange,
-  force,
   standalone,
   rowCount,
   selectPageSize,
@@ -195,7 +193,6 @@ export default typedMemo(function DataTable<D extends object>({
       globalFilter: defaultGlobalFilter,
       sortTypes,
       autoResetSortBy: !isEqual(columnNames, previousColumnNames),
-      force,
       standalone,
       ...moreUseTableOptions,
     },
@@ -354,7 +351,7 @@ export default typedMemo(function DataTable<D extends object>({
       ref={wrapperRef}
       style={{
         width: initialWidth,
-        height: force && standalone ? 'auto' : initialHeight,
+        height: standalone ? 'auto' : initialHeight,
       }}
     >
       {hasGlobalControl ? (
